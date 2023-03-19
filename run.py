@@ -29,30 +29,27 @@ def md2(msg):
     """
     # 1. Padding
     BLOCK_SIZE = 16
-    N = len(msg)
-    msg = [ord(c) for c in msg]
-    missing = BLOCK_SIZE - (N % BLOCK_SIZE)
+    msg = bytearray(msg, 'utf-8')
+    missing = BLOCK_SIZE - (len(msg) % BLOCK_SIZE)
     padding = missing * [missing]
-    msg = msg + padding
+    msg = msg + bytearray(padding)
 
     # 2. Checksum
-    checksum = BLOCK_SIZE * [0]
+    checksum = bytearray(BLOCK_SIZE * [0])
     L = 0
-    blocks = math.ceil(N / BLOCK_SIZE)
 
-    for i in range(blocks):
+    for i in range(len(msg) // BLOCK_SIZE):
         for j in range(BLOCK_SIZE):
             c = msg[BLOCK_SIZE * i + j]
             checksum[j] = (checksum[j]) ^ (S[c ^ L])
             L = checksum[j]
 
     msg += checksum
-    blocks += 1
 
     # 3. The Hash
     X = 48 * [0] # Inicialización del digesto
 
-    for i in range(blocks):
+    for i in range(len(msg) // BLOCK_SIZE):
         for j in range(BLOCK_SIZE):
             X[j + BLOCK_SIZE] = msg[BLOCK_SIZE * i + j]
             X[j + 2 * BLOCK_SIZE] = (X[j + BLOCK_SIZE]) ^ (X[j])
@@ -72,6 +69,9 @@ lines = []
 for line in fileinput.input():
     lines.append(line.strip()) #elimina los saltos de linea
 
-digesto = md2("" if not lines else lines[0])
+#print(lines[0])
 
-print(binascii.hexlify(bytes(digesto)[:16]).decode())
+digesto = md2("" if not lines else lines[0])
+#print(digesto)
+
+print(binascii.hexlify(bytes(digesto)[:16]).decode('utf-8'))
