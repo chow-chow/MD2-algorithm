@@ -72,6 +72,6 @@ lines = []
 for line in fileinput.input():
     lines.append(line.strip()) #elimina los saltos de linea
 
-digest = md2("" if not lines else lines[0])
+digesto = md2("" if not lines else lines[0])
 
-print(binascii.hexlify(bytes(digest)[:16]).decode())
+print(binascii.hexlify(bytes(digesto)[:16]).decode())
